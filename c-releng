@@ -1,21 +1,14 @@
 #!/usr/bin/env bash
 
-DIR=${1:-$PWD}
+if [ $# -ne 1 ]; then
+    echo "please input one file"
+fi
 
-cd $DIR
+cfiles=$1
 
-README_FILE=(README.*)
-
-if [ -d src ]; then
-    echo "Checking sources in $PWD/src"
-
-    cfiles=`find -L src -name '*.[ch]'`
-    hfiles=`find -L src -name '*.h'`
-
+ if [ -f $cfiles  ]; then
     #ack '/\*  +' src /dev/null && exit 1
     ack '(?<=\#define)\s*DDEBUG\s*[1-9]' src /dev/null
-    ack '\(\);' $hfiles /dev/null
-    ack '^\w+[^()]*?\*\s\w+' $hfiles /dev/null
     ack '.{81}' $cfiles /dev/null
     ack '[ \t]+$' $cfiles /dev/null
     ack '(?<!:)//' $cfiles /dev/null
@@ -215,16 +208,4 @@ if [ -d src ]; then
         }' $cfiles
 
     ngx-style.pl $cfiles
-fi
-
-if [ -d src ]; then
-    echo "Checking tests in $PWD/t"
-
-    tfiles=`find -L t -name '*.t'`
-
-    ack -l '\r\n' $tfiles /dev/null
-    ack '^master_on' $tfiles /dev/null
-    ack '=== TEST \d+\s+' $tfiles /dev/null
-    ack '\--- *(?:ONLY|LAST)' $tfiles /dev/null
-    ack '^\s*plan\s+tests\s*=>.*?repeat_each\(\d+\)' $tfiles /dev/null
 fi
