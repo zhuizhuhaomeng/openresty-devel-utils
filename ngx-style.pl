@@ -195,8 +195,8 @@ for my $file (@ARGV) {
                 }
             }
 
-            # 3.
-            if ($line =~ /\(\w+( \*+)?\)\w+/) {
+            # 3. type cast. example: (int) (unsigned int) (unsinged int *)
+            if ($line =~ /\(\w+( \w+)+( \*+)?\)\w+/) {
                 output "need space after )";
             }
         }
