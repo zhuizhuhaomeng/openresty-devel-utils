@@ -61,6 +61,12 @@ for my $file (@ARGV) {
             $consecutive_empty_lines = 0;
         }
 
+        # type cast
+        if ($line =~ /\(\w+( \w+)*( *\*+)?\)\w+/) {
+           output "need space after )";
+        }
+
+
         if ($line =~ /^\s+\} else/) {
             if (!$prev_line_is_empty) {
                 output "need a blank line before else code blocks.";
