@@ -44,6 +44,8 @@ for my $file (@ARGV) {
 
     my ($cur_line_is_code_block_end, $prev_line_is_code_block_end) = (0, 0);
 
+    my ($label_defined) = (0);
+
     while (<$in>) {
         $line = $_;
 
@@ -60,12 +62,6 @@ for my $file (@ARGV) {
             $cur_line_is_empty = 0;
             $consecutive_empty_lines = 0;
         }
-
-        # type cast
-        if ($line =~ /\(\w+( \w+)*( *\*+)?\)\w+/) {
-           output "need space after )";
-        }
-
 
         if ($line =~ /^\s+\} else/) {
             if (!$prev_line_is_empty) {
@@ -93,6 +89,17 @@ for my $file (@ARGV) {
                 }
             }
         }
+
+        if ($label_defined && $line !~ /^$/) {
+            output "need blank line";
+        }
+
+        if ($line =~ /^\w+:$/) {
+            $label_defined = 1;
+        } else {
+            $label_defined = 0;
+        }
+
 
         if ($line =~ /\r\n$/) {
             output "found DOS line ending";
@@ -202,7 +209,7 @@ for my $file (@ARGV) {
             }
 
             # 3. type cast. example: (int) (unsigned int) (unsinged int *)
-            if ($line =~ /\(\w+( \w+)+( \*+)?\)\w+/) {
+            if ($line =~ /\(\w+( \w+)*( \*+)?\)\w+/) {
                 output "need space after )";
             }
         }
